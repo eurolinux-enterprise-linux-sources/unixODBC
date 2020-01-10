@@ -1,7 +1,7 @@
 Summary: A complete ODBC driver manager for Linux
 Name: unixODBC
 Version: 2.2.14
-Release: 11%{?dist}
+Release: 12%{?dist}
 Group: System Environment/Libraries
 URL: http://www.unixODBC.org/
 # Programs are GPL, libraries are LGPL, except News Server library is GPL.
@@ -21,6 +21,7 @@ Patch8: so-version-bump.patch
 Patch9: keep-typedefs.patch
 Patch10: odbcint64-config.patch
 Patch11: enable-items.patch
+Patch12: isql-fixes.patch
 
 Conflicts: iodbc
 BuildRequires: libX11-devel libXt-devel libXext-devel
@@ -64,6 +65,7 @@ This package contains components for the ODBCConfig
 %patch9 -p1
 %patch10 -p1
 %patch11 -p1
+%patch12 -p1
 
 chmod 0644 Drivers/MiniSQL/*.c
 chmod 0644 Drivers/nn/*.c
@@ -189,6 +191,10 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Nov 13 2012 Tom Lane <tgl@redhat.com> 2.2.14-12
+- Fix isql crash at EOF with -b option (back-port of Fedora patch)
+Resolves: #690193
+
 * Tue May  4 2010 Tom Lane <tgl@redhat.com> 2.2.14-11
 - Re-add accidentally-removed desktop icon for ODBCConfig
 Resolves: #587933
