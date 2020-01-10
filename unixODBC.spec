@@ -1,7 +1,7 @@
 Summary: A complete ODBC driver manager for Linux
 Name: unixODBC
 Version: 2.2.14
-Release: 12%{?dist}
+Release: 14%{?dist}
 Group: System Environment/Libraries
 URL: http://www.unixODBC.org/
 # Programs are GPL, libraries are LGPL, except News Server library is GPL.
@@ -191,6 +191,14 @@ rm -rf $RPM_BUILD_ROOT
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue May 06 2014 Jan Stanek <jstanek@redhat.com> 2.2.14-14
+- Fixed ODBCConfig.desktop file
+Resolves: rhbz#768986
+
+* Tue Feb 04 2014 Jan Stanek <jstanek@redhat.com> 2.2.14-13
+- Add forgotten version increment in so-version-bump.patch
+Resolves: rhbz#1060225
+
 * Tue Nov 13 2012 Tom Lane <tgl@redhat.com> 2.2.14-12
 - Fix isql crash at EOF with -b option (back-port of Fedora patch)
 Resolves: #690193

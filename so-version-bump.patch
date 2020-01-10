@@ -14,6 +14,18 @@ diff -Naur unixODBC-2.2.14.orig/configure.in unixODBC-2.2.14/configure.in
  AC_SUBST(LIB_VERSION)
  
  AC_OUTPUT( Makefile \
+diff -up unixODBC-2.2.14/DriverManager/SQLConnect.c.so-patch unixODBC-2.2.14/DriverManager/SQLConnect.c
+--- unixODBC-2.2.14/DriverManager/SQLConnect.c.so-patch 2014-02-04 12:17:03.739128170 +0100
++++ unixODBC-2.2.14/DriverManager/SQLConnect.c  2014-02-04 12:17:12.884159884 +0100
+@@ -577,7 +577,7 @@ static char const rcsid[]= "$RCSfile: SQ
+ #else
+ #define CURSOR_LIB      "libodbccr"
+ #endif
+-#define CURSOR_LIB_VER  ".1"
++#define CURSOR_LIB_VER  ".2"
+ 
+ /*
+  * structure to contain the loaded lib entry points
 diff -Naur unixODBC-2.2.14.orig/DRVConfig/Mimer/Makefile.am unixODBC-2.2.14/DRVConfig/Mimer/Makefile.am
 --- unixODBC-2.2.14.orig/DRVConfig/Mimer/Makefile.am	2008-06-17 06:14:07.000000000 -0400
 +++ unixODBC-2.2.14/DRVConfig/Mimer/Makefile.am	2009-02-16 11:59:31.000000000 -0500
