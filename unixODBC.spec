@@ -1,7 +1,7 @@
 Summary: A complete ODBC driver manager for Linux
 Name: unixODBC
 Version: 2.3.1
-Release: 10%{?dist}
+Release: 11%{?dist}
 Group: System Environment/Libraries
 URL: http://www.unixODBC.org/
 # Programs are GPL, libraries are LGPL, except News Server library is GPL.
@@ -73,7 +73,7 @@ automake --add-missing
 autoconf
 
 # unixODBC 2.2.14 is not aliasing-safe
-CFLAGS="%{optflags} -fno-strict-aliasing"
+CFLAGS="%{optflags} -fno-strict-aliasing -DDEFINE_CURSOR_LIB_VER"
 CXXFLAGS="$CFLAGS"
 export CFLAGS CXXFLAGS
 
@@ -161,6 +161,14 @@ install -m644 %{SOURCE12} $RPM_BUILD_ROOT%{_mandir}/man1/odbc_config.1
 %postun -p /sbin/ldconfig
 
 %changelog
+* Tue Aug 04 2015 Scientific Linux Auto Patch Process <SCIENTIFIC-LINUX-DEVEL@LISTSERV.FNAL.GOV>
+- Eliminated rpmbuild "bogus date" error due to inconsistent weekday,
+  by assuming the date is correct and changing the weekday.
+
+* Wed Jul 15 2015 Jan Stanek <jstanek@redhat.com> - 2.3.1-11
+- Turn on versioning of cursor library.
+  Resolves: rhbz#1194065
+
 * Tue Feb 25 2014 Jan Stanek <jstanek@redhat.com> - 2.3.1-10
 - Added missing man pages
   Resolves: rhbz#948935
