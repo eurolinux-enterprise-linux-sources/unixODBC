@@ -1,0 +1,125 @@
+Fix assorted small errors detected by a Coverity scan, per bug #760877.
+
+
+diff -Naur unixODBC-2.3.1.orig/DriverManager/SQLGetCursorName.c unixODBC-2.3.1/DriverManager/SQLGetCursorName.c
+--- unixODBC-2.3.1.orig/DriverManager/SQLGetCursorName.c	2011-08-04 09:06:56.000000000 -0400
++++ unixODBC-2.3.1/DriverManager/SQLGetCursorName.c	2013-03-19 13:12:19.022156796 -0400
+@@ -189,7 +189,7 @@
+ 
+     thread_protect( SQL_HANDLE_STMT, statement );
+ 
+-    if ( !buffer_length < 0 )
++    if ( buffer_length < 0 )
+     {
+         dm_log_write( __FILE__, 
+                 __LINE__, 
+diff -Naur unixODBC-2.3.1.orig/DriverManager/SQLGetCursorNameW.c unixODBC-2.3.1/DriverManager/SQLGetCursorNameW.c
+--- unixODBC-2.3.1.orig/DriverManager/SQLGetCursorNameW.c	2011-08-04 09:07:01.000000000 -0400
++++ unixODBC-2.3.1/DriverManager/SQLGetCursorNameW.c	2013-03-19 13:12:19.023156773 -0400
+@@ -172,7 +172,7 @@
+ 
+     thread_protect( SQL_HANDLE_STMT, statement );
+ 
+-    if ( !buffer_length < 0 )
++    if ( buffer_length < 0 )
+     {
+         dm_log_write( __FILE__, 
+                 __LINE__, 
+diff -Naur unixODBC-2.3.1.orig/DriverManager/__info.c unixODBC-2.3.1/DriverManager/__info.c
+--- unixODBC-2.3.1.orig/DriverManager/__info.c	2011-11-15 06:43:15.000000000 -0500
++++ unixODBC-2.3.1/DriverManager/__info.c	2013-03-19 13:12:19.022156796 -0400
+@@ -3997,7 +3997,7 @@
+ 
+ void setup_error_head( EHEAD *error_header, void *handle, int type )
+ {
+-    memset( error_header, 0, sizeof( error_header ));
++    memset( error_header, 0, sizeof( *error_header ));
+ 
+     error_header -> owning_handle = handle;
+     error_header -> handle_type = type;
+diff -Naur unixODBC-2.3.1.orig/Drivers/Postgre7.1/info.c unixODBC-2.3.1/Drivers/Postgre7.1/info.c
+--- unixODBC-2.3.1.orig/Drivers/Postgre7.1/info.c	2009-12-11 11:54:08.000000000 -0500
++++ unixODBC-2.3.1/Drivers/Postgre7.1/info.c	2013-03-19 13:12:19.025156733 -0400
+@@ -1007,7 +1007,7 @@
+ 	strcpy(prefixes, globals.extra_systable_prefixes);
+ 	i = 0;
+ 	prefix[i] = strtok(prefixes, ";");
+-	while (prefix[i] && i<32) {
++	while (prefix[i] && i<sizeof(prefix)-1) {
+ 		prefix[++i] = strtok(NULL, ";");
+ 	}
+ 
+@@ -1023,7 +1023,7 @@
+ 		free(tableType);
+ 		i = 0;
+ 		table_type[i] = strtok(table_types, ",");
+-		while (table_type[i] && i<32) {
++		while (table_type[i] && i<sizeof(table_type)-1) {
+ 			table_type[++i] = strtok(NULL, ",");
+ 		}
+ 
+diff -Naur unixODBC-2.3.1.orig/Drivers/nn/convert.c unixODBC-2.3.1/Drivers/nn/convert.c
+--- unixODBC-2.3.1.orig/Drivers/nn/convert.c	2009-12-11 11:54:09.000000000 -0500
++++ unixODBC-2.3.1/Drivers/nn/convert.c	2013-03-19 13:12:19.024156752 -0400
+@@ -246,7 +246,7 @@
+ 	if( cidx == -1 )
+ 		return 0;
+ 
+-	for(i=0; i< sizeof(ctype_idx_tab); i++ )
++	for(i=0; i< sizeof(sqltype_idx_tab); i++ )
+ 	{
+ 		if( sqltype_idx_tab[i].sqltype == sqltype )
+ 		{
+@@ -432,7 +432,7 @@
+ 	if( cidx == -1 )
+ 		return 0;
+ 
+-	for(i=0; i< sizeof(ctype_idx_tab); i++ )
++	for(i=0; i< sizeof(sqltype_idx_tab); i++ )
+ 	{
+ 		if( sqltype_idx_tab[i].sqltype == sqltype )
+ 		{
+diff -Naur unixODBC-2.3.1.orig/cur/SQLBindCol.c unixODBC-2.3.1/cur/SQLBindCol.c
+--- unixODBC-2.3.1.orig/cur/SQLBindCol.c	2011-08-04 09:11:51.000000000 -0400
++++ unixODBC-2.3.1/cur/SQLBindCol.c	2013-03-19 13:12:19.019156876 -0400
+@@ -90,7 +90,7 @@
+     {
+         CLBCOL *next;
+         
+-        if ( bcol -> local_buffer );
++        if ( bcol -> local_buffer )
+         {
+             free( bcol -> local_buffer );
+         }
+diff -Naur unixODBC-2.3.1.orig/cur/SQLGetInfo.c unixODBC-2.3.1/cur/SQLGetInfo.c
+--- unixODBC-2.3.1.orig/cur/SQLGetInfo.c	2011-08-04 09:13:48.000000000 -0400
++++ unixODBC-2.3.1/cur/SQLGetInfo.c	2013-03-19 13:12:19.020156848 -0400
+@@ -140,6 +140,7 @@
+         value = SQL_PS_POSITIONED_DELETE |
+                     SQL_PS_POSITIONED_UPDATE | 
+                     SQL_PS_SELECT_FOR_UPDATE;
++        break;
+ 
+       case SQL_ROW_UPDATES:
+         cval = "Y";
+diff -Naur unixODBC-2.3.1.orig/exe/isql.c unixODBC-2.3.1/exe/isql.c
+--- unixODBC-2.3.1.orig/exe/isql.c	2011-09-15 12:57:14.000000000 -0400
++++ unixODBC-2.3.1/exe/isql.c	2013-03-19 13:27:09.907545641 -0400
+@@ -121,6 +121,7 @@
+                     break;
+                 case '3':
+                     version3 = 1;
++                    break;
+                 case 'v':
+                     bVerbose = 1;
+                     break;
+@@ -611,8 +612,7 @@
+         {
+             if ( bVerbose ) DumpODBCLog( hEnv, hDbc, hStmt );
+             fprintf( stderr, "[ISQL]ERROR: Could not SQLNumResultCols\n" );
+-            SQLFreeStmt( hStmt, SQL_DROP );
+-            free(szSepLine);
++            break;
+         }
+ 
+         if ( cols > 0 )
