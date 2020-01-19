@@ -1,7 +1,7 @@
 Summary: A complete ODBC driver manager for Linux
 Name: unixODBC
 Version: 2.3.1
-Release: 14%{?dist}
+Release: 6%{?dist}
 Group: System Environment/Libraries
 URL: http://www.unixODBC.org/
 # Programs are GPL, libraries are LGPL, except News Server library is GPL.
@@ -10,22 +10,17 @@ License: GPLv2+ and LGPLv2+
 Source: http://www.unixODBC.org/%{name}-%{version}.tar.gz
 Source1: odbcinst.ini
 Source4: conffile.h
-Source5: README.dist
+Source5: README.fedora
 Source6: isql.1
 Source7: odbc.ini.5
 Source8: odbcinst.1
 Source9: odbcinst.ini.5
-Source10: iusql.1
-Source11: dltest.1
-Source12: odbc_config.1
 
 Patch1: depcomp.patch
 Patch6: export-symbols.patch
 Patch8: so-version-bump.patch
 Patch9: keep-typedefs.patch
 Patch10: coverity-fixes.patch
-Patch11: insecure-buffer-copy.patch
-Patch12: fixed-buffer-overflow.patch
 
 Conflicts: iodbc
 
@@ -54,8 +49,6 @@ ODBC, you need to install this package.
 %patch8 -p1
 %patch9 -p1
 %patch10 -p1
-%patch11 -p1
-%patch12 -p1
 
 chmod 0644 Drivers/MiniSQL/*.c
 chmod 0644 Drivers/nn/*.c
@@ -77,7 +70,7 @@ automake --add-missing
 autoconf
 
 # unixODBC 2.2.14 is not aliasing-safe
-CFLAGS="%{optflags} -fno-strict-aliasing -DDEFINE_CURSOR_LIB_VER"
+CFLAGS="%{optflags} -fno-strict-aliasing"
 CXXFLAGS="$CFLAGS"
 export CFLAGS CXXFLAGS
 
@@ -103,8 +96,7 @@ case `uname -i` in
 esac
 
 # add some explanatory documentation
-# remove reference to nonexistent packages
-sed '/^unixODBC-gui-qt/d' "%{SOURCE5}" >README.dist
+cp %{SOURCE5} README.fedora
 
 # remove obsolete Postgres drivers from the package (but not the setup code)
 rm -f $RPM_BUILD_ROOT%{_libdir}/libodbcpsql.so*
@@ -143,13 +135,10 @@ install -m644 %{SOURCE6} $RPM_BUILD_ROOT%{_mandir}/man1/isql.1
 install -m644 %{SOURCE7} $RPM_BUILD_ROOT%{_mandir}/man5/odbc.ini.5
 install -m644 %{SOURCE8} $RPM_BUILD_ROOT%{_mandir}/man1/odbcinst.1
 install -m644 %{SOURCE9} $RPM_BUILD_ROOT%{_mandir}/man5/odbcinst.ini.5 
-install -m644 %{SOURCE10} $RPM_BUILD_ROOT%{_mandir}/man1/iusql.1 
-install -m644 %{SOURCE11} $RPM_BUILD_ROOT%{_mandir}/man1/dltest.1
-install -m644 %{SOURCE12} $RPM_BUILD_ROOT%{_mandir}/man1/odbc_config.1
 
 %files -f base-so-list
 %doc README COPYING AUTHORS ChangeLog NEWS doc
-%doc README.dist
+%doc README.fedora
 %config(noreplace) %{_sysconfdir}/odbc*
 %{_bindir}/odbcinst
 %{_bindir}/isql
@@ -165,34 +154,6 @@ install -m644 %{SOURCE12} $RPM_BUILD_ROOT%{_mandir}/man1/odbc_config.1
 %postun -p /sbin/ldconfig
 
 %changelog
-* Tue Apr 16 2019 <odubaj@redhat.com> - 2.3.1-14
-- fixed insecure buffer copy (#1571530)
-- fixed possible buffer overflow (#1571528)
-
-* Fri Nov 04 2016 Pavel Raiskup <praiskup@redhat.com> - 2.3.1-13
-- revert: ltdl bundling
-
-* Wed Oct 19 2016 Tomas Repik <trepik@redhat.com> - 2.3.1-12
-- fix the libtool-ltdl compatibility
-  Resolves: rhbz#1267438
-
-* Wed Jul 15 2015 Jan Stanek <jstanek@redhat.com> - 2.3.1-11
-- Turn on versioning of cursor library.
-  Resolves: rhbz#1194065
-
-* Tue Feb 25 2014 Jan Stanek <jstanek@redhat.com> - 2.3.1-10
-- Added missing man pages
-  Resolves: rhbz#948935
-
-* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 2.3.1-9
-- Mass rebuild 2014-01-24
-
-* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 2.3.1-8
-- Mass rebuild 2013-12-27
-
-* Fri Dec 06 2013 Jan Stanek <jstanek@redhat.com> - 2.3.1-7
-- Renamed README.fedora to README.dist
-
 * Thu Jul  4 2013 Honza Horak <hhorak@redhat.com> 2.3.1-6
 - Spec file clean-up
 - Provide man pages created by Jan Stanek
